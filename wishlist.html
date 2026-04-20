@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saved Items — Mzansi Roots</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    .wishlist-wrap { padding: 40px; max-width: 1100px; margin: 0 auto; }
+    @media (max-width: 900px) { .wishlist-wrap { padding: 20px; } }
+  </style>
+</head>
+<body>
+
+  <!-- nav -->
+  <nav>
+    <a class="nav-logo" href="index.html">Mzansi <span>Roots</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Shop</a>
+      <a href="compost.html">Compost Exchange</a>
+      <a href="index.html">How it works</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search produce, farms..." onkeydown="handleNavSearch(event)" id="navSearch"/>
+      </div>
+      <a href="wishlist.html" class="btn btn-outline">Saved</a>
+      <a href="cart.html" class="cart-btn">Cart <span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Saved Items</span>
+    </div>
+    <h1>Saved Items</h1>
+    <p>Your wishlist — saved for when you're ready</p>
+  </div>
+
+  <div class="wishlist-wrap">
+    <div class="prod-grid" id="wishlistGrid"></div>
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <div class="logo">Mzansi <span>Roots</span></div>
+    <p>© 2026 Mzansi Roots. Supporting South African farmers.</p>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="index.html">Contact</a>
+      <a href="index.html">FAQ</a>
+    </nav>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    updateCartCount();
+
+    function renderPageProducts() {
+      renderWishlist();
+    }
+
+    function renderWishlist() {
+      var wishlist = loadWishlist();
+      var grid = document.getElementById("wishlistGrid");
+
+      if (wishlist.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">♡</div><h3>Nothing saved yet</h3><p>Tap the heart on any product to save it here.</p><a href="browse.html" class="btn btn-primary" style="margin:0 auto">Browse produce</a></div>';
+      } else {
+        var html = "";
+        for (var i = 0; i < wishlist.length; i++) {
+          html = html + buildProductCard(wishlist[i]);
+        }
+        grid.innerHTML = html;
+      }
+    }
+
+    renderWishlist();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout — Mzansi Roots</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- nav -->
+  <nav>
+    <a class="nav-logo" href="index.html">Mzansi <span>Roots</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Shop</a>
+      <a href="compost.html">Compost Exchange</a>
+      <a href="index.html">How it works</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search produce, farms..." onkeydown="handleNavSearch(event)" id="navSearch"/>
+      </div>
+      <a href="wishlist.html" class="btn btn-outline">Saved</a>
+      <a href="cart.html" class="cart-btn">Cart <span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="cart.html">Cart</a>
+      <span class="sep">/</span>
+      <span class="current">Checkout</span>
+    </div>
+    <h1>Checkout</h1>
+  </div>
+
+  <div class="checkout-wrap">
+
+    <div class="checkout-form">
+
+      <!-- contact details -->
+      <div class="form-section">
+        <h3>Contact details</h3>
+        <div class="form-row">
+          <div class="form-group"><label>First name</label><input type="text" placeholder="Thandiwe"/></div>
+          <div class="form-group"><label>Last name</label><input type="text" placeholder="Mokoena"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"/></div>
+          <div class="form-group"><label>Phone</label><input type="tel" placeholder="082 000 0000"/></div>
+        </div>
+      </div>
+
+      <!-- delivery address -->
+      <div class="form-section">
+        <h3>Delivery address</h3>
+        <div class="form-row">
+          <div class="form-group full"><label>Street address</label><input type="text" placeholder="15 Main Road"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Suburb</label><input type="text" placeholder="Pinelands"/></div>
+          <div class="form-group"><label>City</label><input type="text" placeholder="Cape Town"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Province</label>
+            <select>
+              <option>Western Cape</option>
+              <option>Eastern Cape</option>
+              <option>Gauteng</option>
+              <option>KwaZulu-Natal</option>
+              <option>Northern Cape</option>
+              <option>North West</option>
+              <option>Mpumalanga</option>
+              <option>Limpopo</option>
+              <option>Free State</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Postal code</label><input type="text" placeholder="7405"/></div>
+        </div>
+      </div>
+
+      <!-- delivery method -->
+      <div class="form-section">
+        <h3>Delivery method</h3>
+        <div class="delivery-options">
+          <label class="delivery-option selected">
+            <input type="radio" name="delivery" value="standard" checked onchange="updateDelivery(this)"/>
+            <div class="delivery-option-info">
+              <h4>Standard delivery</h4>
+              <p>2–3 business days · Cold-chain packaging</p>
+            </div>
+            <span class="delivery-option-price">R65</span>
+          </label>
+          <label class="delivery-option">
+            <input type="radio" name="delivery" value="express" onchange="updateDelivery(this)"/>
+            <div class="delivery-option-info">
+              <h4>Express delivery</h4>
+              <p>Next business day · Priority handling</p>
+            </div>
+            <span class="delivery-option-price">R120</span>
+          </label>
+          <label class="delivery-option">
+            <input type="radio" name="delivery" value="free" onchange="updateDelivery(this)"/>
+            <div class="delivery-option-info">
+              <h4>Free delivery</h4>
+              <p>Orders over R350 · 3–5 business days</p>
+            </div>
+            <span class="delivery-option-price">FREE</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- delivery date -->
+      <div class="form-section">
+        <h3>Preferred delivery date</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Delivery date</label><input type="date"/></div>
+          <div class="form-group">
+            <label>Time preference</label>
+            <select>
+              <option>Morning (8am–12pm)</option>
+              <option>Afternoon (12pm–5pm)</option>
+              <option>Evening (5pm–8pm)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group full" style="margin-top:8px">
+          <label>Delivery notes (optional)</label>
+          <textarea rows="2" placeholder="E.g. Leave at the gate, ring the bell..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn-checkout" onclick="placeOrder()" style="max-width:360px;display:block;cursor:pointer;border:none">
+        Place order →
+      </button>
+
+    </div>
+
+    <div class="cart-summary" style="top:80px">
+      <h3>Order Summary</h3>
+      <div id="checkoutItems"></div>
+      <div class="summary-row"><span>Subtotal</span><span id="coSubtotal">R0</span></div>
+      <div class="summary-row"><span>Delivery</span><span id="coDelivery">R65</span></div>
+      <div class="summary-row total"><span>Total</span><span id="coTotal">R65</span></div>
+    </div>
+
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <div class="logo">Mzansi <span>Roots</span></div>
+    <p>00a9 2026 Mzansi Roots. Supporting South African farmers.</p>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="index.html">Contact</a>
+      <a href="index.html">FAQ</a>
+    </nav>
+  </footer>
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    updateCartCount();
+
+    var deliveryFee = 65;
+
+    // calculates total of all cart items
+    function getSubtotal() {
+      var cart     = loadCart();
+      var subtotal = 0;
+      for (var i = 0; i < cart.length; i++) {
+        subtotal = subtotal + (cart[i].price * cart[i].qty);
+      }
+      return subtotal;
+    }
+
+    // builds the order summary
+    function renderSummary() {
+      var cart     = loadCart();
+      var subtotal = getSubtotal();
+      var total    = subtotal + deliveryFee;
+      if (total < 0) total = 0;
+
+      // lists each item
+      var html = "";
+      for (var i = 0; i < cart.length; i++) {
+        html = html + '<div class="summary-row"><span>' + cart[i].name + ' x' + cart[i].qty + '</span><span>R' + (cart[i].price * cart[i].qty) + '</span></div>';
+      }
+      document.getElementById("checkoutItems").innerHTML = html;
+      document.getElementById("coSubtotal").textContent  = "R" + subtotal;
+      document.getElementById("coDelivery").textContent   = "R" + deliveryFee;
+      document.getElementById("coTotal").textContent      = "R" + total;
+    }
+
+    // updates delivery fee when user selects a delivery option
+    function updateDelivery(radioInput) {
+      // removes selected class from all options
+      var options = document.querySelectorAll(".delivery-option");
+      for (var i = 0; i < options.length; i++) {
+        options[i].classList.remove("selected");
+      }
+      // adds to the one that was clicked
+      radioInput.closest(".delivery-option").classList.add("selected");
+
+      if (radioInput.value === "standard") deliveryFee = 65;
+      if (radioInput.value === "express")  deliveryFee = 120;
+      if (radioInput.value === "free")     deliveryFee = 0;
+
+      renderSummary();
+    }
+
+    // places the order, clears cart and redirects to home page
+    function placeOrder() {
+      var cart = loadCart();
+      if (cart.length === 0) {
+        showToast("Your cart is empty!");
+        return;
+      }
+      // clears the cart from localStorage
+      saveCart([]);
+      updateCartCount();
+      showToast("Order placed! Thank you for supporting SA farmers. 🌱");
+      // Wait a moment then go to home page
+      setTimeout(function() {
+        window.location.href = "index.html";
+      }, 1500);
+    }
+
+    // runs on page load
+    renderSummary();
+  </script>
+
+</body>
+</html>

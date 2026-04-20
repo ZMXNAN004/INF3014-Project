@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart — Mzansi Roots</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- nav -->
+  <nav>
+    <a class="nav-logo" href="index.html">Mzansi <span>Roots</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Shop</a>
+      <a href="compost.html">Compost Exchange</a>
+      <a href="index.html">How it works</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search produce, farms..." onkeydown="handleNavSearch(event)" id="navSearch"/>
+      </div>
+      <a href="wishlist.html" class="btn btn-outline">Saved</a>
+      <a href="cart.html" class="cart-btn">Cart <span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Cart</span>
+    </div>
+    <h1>Your Cart</h1>
+  </div>
+
+  <div class="cart-wrap">
+    <div>
+      <div class="cart-items" id="cartItems"></div>
+    </div>
+    <div class="cart-summary">
+      <h3>Order Summary</h3>
+      <div class="summary-row"><span>Subtotal</span><span id="cartSubtotal">R0</span></div>
+      <div class="summary-row"><span>Delivery</span><span id="cartDelivery">R65</span></div>
+      <div class="summary-row"><span>Discount</span><span id="cartDiscount">-R0</span></div>
+      <div class="summary-row total"><span>Total</span><span id="cartTotal">R65</span></div>
+      <div class="promo-input">
+        <input type="text" placeholder="Promo code" id="promoInput"/>
+        <button onclick="applyPromo()">Apply</button>
+      </div>
+      <a href="checkout.html" class="btn-checkout">Proceed to checkout →</a>
+      <a href="browse.html" class="btn" style="width:100%;margin-top:8px;justify-content:center;color:#6B4226">← Continue shopping</a>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <div class="logo">Mzansi <span>Roots</span></div>
+    <p>© 2026 Mzansi Roots. Supporting South African farmers.</p>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="index.html">Contact</a>
+      <a href="index.html">FAQ</a>
+    </nav>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    updateCartCount();
+
+    var promoDiscount = 0;
+    var deliveryFee = 65;
+
+    function getSubtotal() {
+      var cart = loadCart();
+      var total = 0;
+      for (var i = 0; i < cart.length; i++) {
+        total = total + (cart[i].price * cart[i].qty);
+      }
+      return total;
+    }
+
+    function renderCart() {
+      var cart = loadCart();
+      var container = document.getElementById("cartItems");
+
+      if (cart.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">—</div><h3>Your cart is empty</h3><p>Start shopping to add items.</p><a href="browse.html" class="btn btn-primary" style="margin:0 auto">Shop now</a></div>';
+      } else {
+        var html = "";
+        for (var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          var imgContent = item.img ? '<img src="' + item.img + '" alt="' + item.name + '">' : "No image";
+          html = html
+            + '<div class="cart-item">'
+            + '<div class="cart-item-img">' + imgContent + '</div>'
+            + '<div class="cart-item-info">'
+            + '<h4>' + item.name + '</h4>'
+            + '<p>' + item.farm + ' · ' + item.loc + '</p>'
+            + '<div class="cart-item-qty">'
+            + '<button class="cart-qty-btn" onclick="changeCartQty(' + item.id + ', -1)">−</button>'
+            + '<span style="font-weight:600">' + item.qty + '</span>'
+            + '<button class="cart-qty-btn" onclick="changeCartQty(' + item.id + ', 1)">+</button>'
+            + '</div>'
+            + '</div>'
+            + '<div class="cart-item-price">R' + (item.price * item.qty) + '</div>'
+            + '<button class="cart-remove" onclick="removeFromCart(' + item.id + ')">Remove</button>'
+            + '</div>';
+        }
+        container.innerHTML = html;
+      }
+
+      var subtotal = getSubtotal();
+      var total = subtotal + deliveryFee - promoDiscount;
+      if (total < 0) total = 0;
+
+      document.getElementById("cartSubtotal").textContent = "R" + subtotal;
+      document.getElementById("cartDelivery").textContent = "R" + deliveryFee;
+      document.getElementById("cartDiscount").textContent = "-R" + promoDiscount;
+      document.getElementById("cartTotal").textContent = "R" + total;
+    }
+
+    function removeFromCart(productId) {
+      var cart = loadCart();
+      var newCart = [];
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].id !== productId) newCart.push(cart[i]);
+      }
+      saveCart(newCart);
+      updateCartCount();
+      renderCart();
+    }
+
+    function changeCartQty(productId, change) {
+      var cart = loadCart();
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].id === productId) {
+          cart[i].qty = cart[i].qty + change;
+          if (cart[i].qty < 1) cart[i].qty = 1;
+        }
+      }
+      saveCart(cart);
+      renderCart();
+    }
+
+    function applyPromo() {
+      var code = document.getElementById("promoInput").value.toUpperCase();
+      if (code === "MZANSI10") {
+        promoDiscount = Math.round(getSubtotal() * 0.1);
+        showToast("Promo applied! 10% off");
+      } else {
+        promoDiscount = 0;
+        showToast("Invalid promo code");
+      }
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+
+</body>
+</html>

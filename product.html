@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product — Mzansi Roots</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ===== PRODUCT PAGE SPECIFIC STYLES ===== */
+    .product-wrap {
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .product-gallery { display: flex; flex-direction: column; gap: 12px; }
+
+    .product-main-img {
+      width: 100%;
+      height: 380px;
+      background: var(--tan-dark);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      border: 1px solid var(--border);
+    }
+
+    .product-main-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+    .product-thumb {
+      height: 72px;
+      background: var(--tan-dark);
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 0.6rem;
+    }
+
+    .product-thumb:hover { border-color: var(--orange); }
+    .product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-info { padding-top: 8px; }
+
+    .product-info h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--brown-dark);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .product-farm {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 14px;
+    }
+
+    .stars { display: flex; align-items: center; gap: 3px; margin-bottom: 16px; }
+    .star { color: #E9A830; font-size: 0.85rem; }
+    .star.empty { color: var(--border); }
+    .stars span { font-size: 0.78rem; color: var(--text-light); margin-left: 4px; }
+
+    .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 20px; }
+    .price-main { font-size: 1.8rem; font-weight: 700; color: var(--green); }
+    .price-orig { font-size: 1rem; color: var(--text-light); text-decoration: line-through; }
+    .price-badge { background: var(--orange); color: white; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    .qty-section { margin-bottom: 20px; }
+    .qty-label { font-size: 0.8rem; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+
+    .qty-control { display: flex; align-items: center; gap: 12px; }
+
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--white);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .qty-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .qty-val { font-size: 1.1rem; font-weight: 700; color: var(--brown-dark); min-width: 28px; text-align: center; }
+
+    .action-row { display: flex; gap: 10px; margin-bottom: 20px; }
+
+    .btn-cart {
+      flex: 1;
+      padding: 14px;
+      background: var(--brown-dark);
+      color: var(--tan);
+      border: none;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cart:hover { background: var(--orange); }
+
+    .btn-wishlist {
+      padding: 14px 18px;
+      background: transparent;
+      color: var(--text-mid);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-wishlist:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-wishlist.saved { background: #FFF0E8; border-color: var(--orange); color: var(--orange); }
+
+    .farmer-strip {
+      background: var(--tan);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .farmer-av {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--tan-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .farmer-strip h4 { font-size: 0.85rem; font-weight: 700; color: var(--brown-dark); }
+    .farmer-strip p  { font-size: 0.75rem; color: var(--text-light); }
+
+    .btn-farmer {
+      margin-left: auto;
+      padding: 6px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-farmer:hover { border-color: var(--orange); color: var(--orange); }
+
+    .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+
+    .tab {
+      padding: 10px 18px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .tab-content p { font-size: 0.85rem; line-height: 1.8; color: var(--text-mid); }
+
+    .tab-content ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+    .tab-content ul li {
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .tab-content ul li::before { content: '→'; position: absolute; left: 0; color: var(--orange); font-size: 0.75rem; top: 3px; }
+
+    .related-section { padding: 0 40px 40px; }
+
+    @media (max-width: 900px) {
+      .product-wrap { grid-template-columns: 1fr; padding: 20px; }
+      .related-section { padding: 0 20px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="index.html">Mzansi <span>Roots</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Shop</a>
+      <a href="compost.html">Compost Exchange</a>
+      <a href="index.html">How it works</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search produce, farms..." onkeydown="handleNavSearch(event)" id="navSearch"/>
+      </div>
+      <a href="wishlist.html" class="btn btn-outline">Saved</a>
+      <a href="cart.html" class="cart-btn">Cart <span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="page-header" style="padding: 20px 40px;">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <a href="browse.html" id="breadCat">Browse</a>
+      <span class="sep">/</span>
+      <span class="current" id="breadName">Product</span>
+    </div>
+  </div>
+
+  <!-- product detail -->
+  <div class="product-wrap">
+
+    <div class="product-gallery">
+      <div class="product-main-img" id="mainImg">ADD YOUR IMAGE HERE</div>
+
+    </div>
+
+    <div class="product-info">
+      <div class="prod-cat" id="productCat">Vegetables</div>
+      <h1 id="productName">Product Name</h1>
+      <div class="product-farm" id="productFarm">🌾 Farm · Location</div>
+
+      <div class="stars">
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star empty">★</span>
+        <span>4.0 (12 reviews)</span>
+      </div>
+
+      <div class="price-row">
+        <span class="price-main" id="productPrice">R0</span>
+        <span class="price-orig hidden" id="productOrig"></span>
+        <span class="price-badge hidden" id="productDiscount"></span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- quantity selector -->
+      <div class="qty-section">
+        <div class="qty-label">Quantity</div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-val" id="qtyVal">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+          <span style="font-size:0.8rem;color:var(--text-light);margin-left:4px" id="productUnit">units</span>
+        </div>
+      </div>
+
+      <!-- action buttons -->
+      <div class="action-row">
+        <button class="btn-cart" onclick="addCurrentToCart()">Add to cart</button>
+        <button class="btn-wishlist" id="wishlistBtn" onclick="toggleWishlistCurrent()">♡ Save</button>
+      </div>
+
+      <!-- farmer strip -->
+      <div class="farmer-strip">
+        <div class="farmer-av"><img id="farmerImg" src="" alt="Farmer photo" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:none"/><span id="farmerImgPlaceholder" style="font-size:1.2rem;color:var(--text-light)">&#128100;</span></div>
+        <div>
+          <h4 id="farmerName">Farmer Name</h4>
+          <p id="farmerLoc">Location · Est. Year</p>
+        </div>
+        <button class="btn-farmer">View farm profile</button>
+      </div>
+
+      <!-- tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this, 'desc')">Description</div>
+        <div class="tab" onclick="switchTab(this, 'farm')">Farm details</div>
+        <div class="tab" onclick="switchTab(this, 'delivery')">Delivery</div>
+        <div class="tab" onclick="switchTab(this, 'reviews')">Reviews</div>
+      </div>
+
+      <div class="tab-content active" id="tab-desc">
+        <p id="productDesc">Loading...</p>
+      </div>
+      <div class="tab-content" id="tab-farm">
+        <ul>
+          <li id="farmDetail1">Family-run farm with decades of experience</li>
+          <li>Uses natural composting and no synthetic pesticides</li>
+          <li>Produce harvested to order for maximum freshness</li>
+        </ul>
+      </div>
+      <div class="tab-content" id="tab-delivery">
+        <ul>
+          <li>Harvested within 24 hours of your order</li>
+          <li>Delivered in 2–3 business days to the Western Cape</li>
+          <li>Cold-chain packaging to maintain freshness</li>
+          <li>Free delivery on orders over R350</li>
+        </ul>
+      </div>
+      <div class="tab-content" id="tab-reviews">
+        <ul>
+          <li>"Freshest produce I've ever bought. My kids actually ate it!" — Thandiwe M.</li>
+          <li>"Arrived perfectly cold and crisp. Will buy again." — Sipho N.</li>
+          <li>"Love knowing exactly where my food comes from." — Aisha K.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- related products -->
+  <div class="related-section">
+    <div class="section-header"><h2>You might also like</h2></div>
+    <div class="prod-grid" id="relatedGrid"></div>
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <div class="logo">Mzansi <span>Roots</span></div>
+    <p>00a9 2026 Mzansi Roots. Supporting South African farmers.</p>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="index.html">Contact</a>
+      <a href="index.html">FAQ</a>
+    </nav>
+  </footer>
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    updateCartCount();
+
+    // keeps track of the current product and quantity
+    var currentProduct = null;
+    var currentQty     = 1;
+
+    // refresh the wishlist button
+    function renderPageProducts() {
+      updateWishlistButton();
+    }
+
+    // read that id and load the right product.
+
+    var productId = parseInt(localStorage.getItem("mzansi_current_product"));
+
+    // find the product that matches this id
+    for (var i = 0; i < PRODUCTS.length; i++) {
+      if (PRODUCTS[i].id === productId) {
+        currentProduct = PRODUCTS[i];
+      }
+    }
+
+    // if no product found, go back to browse
+    if (currentProduct === null) {
+      window.location.href = "browse.html";
+    }
+
+    // product details
+    document.getElementById("productName").textContent  = currentProduct.name;
+    document.getElementById("productCat").textContent   = currentProduct.cat;
+    document.getElementById("productFarm").textContent  = currentProduct.farm + " · " + currentProduct.loc;
+    document.getElementById("productPrice").textContent = "R" + currentProduct.price;
+    document.getElementById("productUnit").textContent  = currentProduct.unit + "s";
+    document.getElementById("productDesc").textContent  = currentProduct.desc;
+    document.getElementById("farmerName").textContent   = currentProduct.farmer;
+    document.getElementById("farmerLoc").textContent    = currentProduct.loc + " · Est. " + currentProduct.farmerEst;
+    document.getElementById("breadCat").textContent     = currentProduct.cat;
+    document.getElementById("breadName").textContent    = currentProduct.name;
+    document.title = currentProduct.name + " — Mzansi Roots";
+
+    // shows discount info if there is a sale price
+    if (currentProduct.orig !== null) {
+      var discountPct = Math.round((1 - currentProduct.price / currentProduct.orig) * 100);
+      document.getElementById("productOrig").textContent     = "R" + currentProduct.orig;
+      document.getElementById("productDiscount").textContent = discountPct + "% OFF";
+      document.getElementById("productOrig").classList.remove("hidden");
+      document.getElementById("productDiscount").classList.remove("hidden");
+    }
+
+    // shows product image if it exists
+    if (currentProduct.img) {
+      document.getElementById("mainImg").innerHTML = '<img src="' + currentProduct.img + '" alt="' + currentProduct.name + '" onerror="this.parentElement.textContent=\'ADD YOUR IMAGE HERE\'">';
+    }
+
+    // updates wishlist button
+    updateWishlistButton();
+
+    // builds different related products
+    var related = [];
+    for (var i = 0; i < PRODUCTS.length; i++) {
+      if (PRODUCTS[i].cat === currentProduct.cat && PRODUCTS[i].id !== currentProduct.id) {
+        related.push(PRODUCTS[i]);
+      }
+    }
+    var relatedHTML = "";
+    for (var i = 0; i < Math.min(related.length, 3); i++) {
+      relatedHTML = relatedHTML + buildProductCard(related[i]);
+    }
+    document.getElementById("relatedGrid").innerHTML = relatedHTML;
+
+    // quanitity functions
+    function changeQty(change) {
+      currentQty = currentQty + change;
+      if (currentQty < 1) currentQty = 1;
+      document.getElementById("qtyVal").textContent = currentQty;
+    }
+
+    // adds the current product to cart using the selected quantity
+    function addCurrentToCart() {
+      var cart      = loadCart();
+      var alreadyIn = false;
+
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].id === currentProduct.id) {
+          cart[i].qty = cart[i].qty + currentQty;
+          alreadyIn   = true;
+        }
+      }
+
+      if (!alreadyIn) {
+        cart.push({
+          id:    currentProduct.id,
+          name:  currentProduct.name,
+          farm:  currentProduct.farm,
+          loc:   currentProduct.loc,
+          price: currentProduct.price,
+          img:   currentProduct.img,
+          qty:   currentQty
+        });
+      }
+
+      saveCart(cart);
+      updateCartCount();
+      showToast(currentProduct.name + " added to cart");
+    }
+
+    // toggles wishlist for the current product
+    function toggleWishlistCurrent() {
+      toggleWishlist(currentProduct.id, null);
+    }
+
+    // updates the Save button to show current wishlist state
+    function updateWishlistButton() {
+      var wishlist = loadWishlist();
+      var isSaved  = false;
+      for (var i = 0; i < wishlist.length; i++) {
+        if (wishlist[i].id === currentProduct.id) isSaved = true;
+      }
+      var btn = document.getElementById("wishlistBtn");
+      btn.textContent = isSaved ? "♥ Saved" : "♡ Save";
+      btn.className   = isSaved ? "btn-wishlist saved" : "btn-wishlist";
+    }
+
+    // switches between description / farm / delivery / reviews tabs
+    function switchTab(tabEl, tabId) {
+      var allTabs    = document.querySelectorAll(".tab");
+      var allContent = document.querySelectorAll(".tab-content");
+      for (var i = 0; i < allTabs.length; i++)    allTabs[i].classList.remove("active");
+      for (var i = 0; i < allContent.length; i++) allContent[i].classList.remove("active");
+      tabEl.classList.add("active");
+      document.getElementById("tab-" + tabId).classList.add("active");
+    }
+  </script>
+
+</body>
+</html>

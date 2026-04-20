@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop — Mzansi Roots</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    .browse-wrap { padding: 32px 40px; }
+    .browse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    @media (max-width: 900px) {
+      .browse-wrap { padding: 20px; }
+      .browse-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .browse-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- nav -->
+  <nav>
+    <a class="nav-logo" href="index.html">Mzansi <span>Roots</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Shop</a>
+      <a href="compost.html">Compost Exchange</a>
+      <a href="index.html">How it works</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search produce, farms..." onkeydown="handleNavSearch(event)" id="navSearch"/>
+      </div>
+      <a href="wishlist.html" class="btn btn-outline">Saved</a>
+      <a href="cart.html" class="cart-btn">Cart <span class="cart-count" id="cartCount">0</span></a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="current" id="breadcrumbCat">All Products</span>
+    </div>
+    <h1 id="pageTitle">All Products</h1>
+    <p>Fresh produce from verified South African farms</p>
+  </div>
+
+  <div class="browse-wrap">
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-pill active" onclick="filterProducts('All', this)">All</button>
+      <button class="filter-pill" onclick="filterProducts('Vegetables', this)">Vegetables</button>
+      <button class="filter-pill" onclick="filterProducts('Fruits', this)">Fruits</button>
+      <button class="filter-pill" onclick="filterProducts('Grains', this)">Grains</button>
+      <button class="filter-pill" onclick="filterProducts('Boxes', this)">Harvest Boxes</button>
+    </div>
+
+    <div class="sort-bar">
+      <p id="resultCount">Showing 9 products</p>
+      <select class="sort-select" onchange="sortProducts(this.value)">
+        <option value="default">Sort: Featured</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+      </select>
+    </div>
+
+    <div class="browse-grid" id="browseGrid"></div>
+  </div>
+
+  <!-- footer -->
+  <footer>
+    <div class="logo">Mzansi <span>Roots</span></div>
+    <p>© 2026 Mzansi Roots. Supporting South African farmers.</p>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="index.html">Contact</a>
+      <a href="index.html">FAQ</a>
+    </nav>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    updateCartCount();
+
+    var currentFilter = "All";
+    var currentSort = "default";
+
+    function renderPageProducts() {
+      applyFilterAndSort();
+    }
+
+    function renderBrowse(list) {
+      var grid = document.getElementById("browseGrid");
+      if (list.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">?</div><h3>No products found</h3><p>Try a different filter.</p></div>';
+        document.getElementById("resultCount").textContent = "Showing 0 products";
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < list.length; i++) {
+        html = html + buildProductCard(list[i]);
+      }
+      grid.innerHTML = html;
+      document.getElementById("resultCount").textContent = "Showing " + list.length + " products";
+    }
+
+    function filterProducts(category, btn) {
+      currentFilter = category;
+      var pills = document.querySelectorAll(".filter-pill");
+      for (var i = 0; i < pills.length; i++) {
+        pills[i].classList.remove("active");
+      }
+      btn.classList.add("active");
+      document.getElementById("pageTitle").textContent = category === "All" ? "All Products" : category;
+      document.getElementById("breadcrumbCat").textContent = category === "All" ? "All Products" : category;
+      applyFilterAndSort();
+    }
+
+    function sortProducts(value) {
+      currentSort = value;
+      applyFilterAndSort();
+    }
+
+    function applyFilterAndSort() {
+      var list = [];
+      for (var i = 0; i < PRODUCTS.length; i++) {
+        if (currentFilter === "All" || PRODUCTS[i].cat === currentFilter) {
+          list.push(PRODUCTS[i]);
+        }
+      }
+      if (currentSort === "price-low") {
+        list.sort(function(a, b) { return a.price - b.price; });
+      }
+      if (currentSort === "price-high") {
+        list.sort(function(a, b) { return b.price - a.price; });
+      }
+      renderBrowse(list);
+    }
+
+    // look for a category
+    var urlParams = new URLSearchParams(window.location.search);
+    var catParam = urlParams.get("cat");
+    if (catParam) {
+      var pills = document.querySelectorAll(".filter-pill");
+      for (var i = 0; i < pills.length; i++) {
+        if (pills[i].textContent === catParam) {
+          filterProducts(catParam, pills[i]);
+        }
+      }
+    }
+
+    // checks when a search is made
+    var searchParam = localStorage.getItem("mzansi_search");
+    if (searchParam) {
+      localStorage.removeItem("mzansi_search");
+      var query = searchParam.toLowerCase();
+      var results = [];
+      for (var i = 0; i < PRODUCTS.length; i++) {
+        var p = PRODUCTS[i];
+        if (p.name.toLowerCase().indexOf(query) !== -1 || p.cat.toLowerCase().indexOf(query) !== -1 || p.farm.toLowerCase().indexOf(query) !== -1) {
+          results.push(p);
+        }
+      }
+      renderBrowse(results);
+      document.getElementById("pageTitle").textContent = "Search: " + searchParam;
+    } else if (!catParam) {
+      renderBrowse(PRODUCTS);
+    }
+  </script>
+
+</body>
+</html>
